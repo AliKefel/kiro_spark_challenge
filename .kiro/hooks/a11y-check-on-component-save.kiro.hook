@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "enabled": true,
+  "name": "A11y check on component save",
+  "description": "Audits saved React components against the project accessibility standards and logs any violations. Does not modify code.",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "apps/web/components/**/*.tsx",
+      "packages/renderers/**/*.tsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Audit the saved file against .kiro/steering/accessibility-standards.md. Check specifically for: (1) focus-visible ring on interactive elements, (2) semantic HTML instead of div onClick, (3) aria-label on icon-only buttons, (4) color contrast in any inline styles, (5) prefers-reduced-motion respect in animations, (6) labels associated with form inputs, (7) minimum 44x44px click targets. For each violation found, append an entry to apps/web/.a11y-log.md in the format: '## [timestamp] [filepath]\\n- [severity]: [violation description]\\n'. Do NOT modify the source file; only write to the log."
+  }
+}

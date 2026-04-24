@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "enabled": true,
+  "name": "Update README when specs change",
+  "description": "Keeps the public README Features section in sync with the current requirements documents across all specs.",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      ".kiro/specs/**/requirements.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Read every requirements.md file under .kiro/specs/. Synthesize a concise, user-facing description of the project's current feature set — written for a student who might use Lattice, not for developers. Update only the 'Features' section of README.md (between the '## Features' heading and the next '##' heading). Preserve all other sections of the README exactly. Keep the total Features section under 200 words. Use plain language; avoid jargon like 'EARS', 'ConceptNode', or 'Provenance Gate' in this section — those belong in ARCHITECTURE.md, not the user-facing README."
+  }
+}

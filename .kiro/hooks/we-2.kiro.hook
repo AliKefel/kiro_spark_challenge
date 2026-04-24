@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "enabled": true,
+  "name": "Append completed spec tasks to CHANGELOG",
+  "description": "Automatically records each completed spec task to CHANGELOG.md so the project history writes itself as work progresses.",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "echo \"$(date +%Y-%m-%d) | spec task completed\" >> CHANGELOG.md"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "enabled": true,
+  "name": "Guardrail audit on renderer save",
+  "description": "Verifies renderer code enforces the Agency Guardrail rules and logs findings to the audit log.",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "packages/renderers/**/*.ts",
+      "packages/renderers/**/*.tsx",
+      "packages/content-graph/**/*.ts"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Verify the saved file against .kiro/steering/agency-guardrail.md. Confirm the following: (1) no code path renders a ConceptNode without first checking that evidenceAnchors.length > 0, (2) no flashcard component reveals its answer without a non-empty learner attempt, (3) no generated content exists that is not traceable back to a sourceId, (4) no code path scores, grades, or corrects a learner's response, (5) no code path operates on content flagged as 'graded assignment'. For each potential violation, append an entry to .kiro/audit-log.md in the format: '## [timestamp] [filepath]\\n- severity: [block|warn|pass]\\n- rule: [rule number from agency-guardrail.md]\\n- detail: [what was found]\\n'. Do not modify source code; only write findings to the audit log."
+  }
+}
