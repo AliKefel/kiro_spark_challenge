@@ -1,0 +1,29 @@
+{
+  "name": "@lattice/content-graph",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest --run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@prisma/client": "5.22.0",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "fast-check": "3.22.0",
+    "prisma": "5.22.0",
+    "vitest": "2.1.8"
+  }
+}
