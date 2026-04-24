@@ -1,0 +1,63 @@
+// packages/content-graph/src/prisma/schema.prisma
+// SQLite for local dev; switch provider to "postgresql" for Supabase deployment.
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/.prisma/client"
+}
+
+model ContentGraph {
+  id        String             @id @default(uuid())
+  sourceIds String             // JSON array of UUID strings
+  nodes     ConceptNode[]
+  edges     RelationshipEdge[]
+  createdAt DateTime           @default(now())
+}
+
+// Application-level guard: every ConceptNode MUST have >= 1 EvidenceAnchor.
+// Enforced by GraphBuilder.addNode() and ConceptNodeSchema before any DB write.
+// A native SQLite CHECK constraint cannot enforce this because it requires a
+// cross-table count (SELECT COUNT(*) FROM EvidenceAnchor WHERE conceptNodeId = NEW.id).
+// The constraint is therefore enforced at the application layer only.
+model ConceptNode {
+  id                  String             @id @default(uuid())
+  graphId             String
+  graph               ContentGraph       @relation(fields: [graphId], references: [id])
+  title               String
+  definition          String
+  expandedExplanation String?
+  depth               String             // "overview" | "standard" | "deep"
+  tags                String             // JSON array of strings
+  evidenceAnchors     EvidenceAnchor[]
+  fromEdges           RelationshipEdge[] @relation("FromNode")
+  toEdges             RelationshipEdge[] @relation("ToNode")
+}
+
+model RelationshipEdge {
+  id              String           @id @default(uuid())
+  graphId         String
+  graph           ContentGraph     @relation(fields: [graphId], references: [id])
+  fromNodeId      String
+  fromNode        ConceptNode      @relation("FromNode", fields: [fromNodeId], references: [id])
+  toNodeId        String
+  toNode          ConceptNode      @relation("ToNode", fields: [toNodeId], references: [id])
+  type            String           // EdgeType enum value
+  confidence      Float
+  evidenceAnchors EvidenceAnchor[]
+}
+
+model EvidenceAnchor {
+  id                 String            @id @default(uuid())
+  sourceId           String            // UUID of the source document
+  locator            String            // JSON: discriminated union { type, ...fields }
+  excerpt            String
+  conceptNodeId      String?
+  conceptNode        ConceptNode?      @relation(fields: [conceptNodeId], references: [id])
+  relationshipEdgeId String?
+  relationshipEdge   RelationshipEdge? @relation(fields: [relationshipEdgeId], references: [id])
+}
